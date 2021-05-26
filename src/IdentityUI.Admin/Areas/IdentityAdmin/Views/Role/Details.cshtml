@@ -1,0 +1,117 @@
+﻿@using SSRD.IdentityUI.Admin.Areas.IdentityAdmin.Views.Role.Components.RoleMenu
+@model SSRD.IdentityUI.Admin.Areas.IdentityAdmin.Models.Role.RoleDetailViewModel
+
+@{
+    SidebarSelection.SelectedOption = SidebarOptions.Role;
+}
+
+@{
+    ViewData["Title"] = "Roles";
+}
+
+@section script{
+    <script>
+            $(document).ready(function () {
+
+                new RemoveRole('@Model.Id');
+            });
+
+            class RemoveRole {
+                constructor(roleId) {
+                    this.roleId = roleId;
+
+                    this.statusAlert = new StatusAlertComponent('#status-alert');
+
+                    this.confirmationModal = new conformationModal(
+                        $(`#modalContainer`),
+                        onYesClick => {
+                            if (onYesClick === null || onYesClick === undefined) {
+                                return;
+                            }
+
+                            if (onYesClick.key === 'removeRole') {
+                                this.remove();
+                            }
+                        }
+                    );
+
+                    $('#remove-button').on('click', () => {
+                        this.confirmationModal.show({ key: 'removeRole' }, 'Are you sure you want to remove role?');
+                    });
+
+                    @if (Model.StatusAlert != null)
+                    {
+                        <text>
+                            if ('@Model.StatusAlert.Success' === 'True')
+                            {
+                                this.statusAlert.showSuccess(@Json.Serialize(Model.StatusAlert.Messages));
+                            }
+                            else
+                            {
+                                this.statusAlert.showError(@Json.Serialize(Model.StatusAlert.Messages));
+                            }
+                        </text>
+                    }
+                }
+
+                remove() {
+                    this.statusAlert.hide();
+
+                    Api.post(`/IdentityAdmin/Role/Remove/${this.roleId}`)
+                        .done(() => {
+                            window.location.href = `/IdentityAdmin/Role`;
+                        })
+                        .fail((resp) => {
+                            this.statusAlert.showErrors(resp.responseJSON['']);
+                        });
+                }
+        }
+    </script>
+}
+
+@section modal {
+    <div id="modalContainer">
+        @await Component.InvokeAsync("IdentityConfirmationModal")
+    </div>
+}
+
+<div>
+    @(await Component.InvokeAsync("RoleMenu", new RoleMenuViewComponent.ViewModel(Model.Id, Model.Name, Model.Type, RoleMenuViewComponent.TabSelected.Details)))
+
+    <div id="status-alert">
+        @await Component.InvokeAsync("IdentityStatusAlertJs")
+    </div>
+
+    <div class="tab-content">
+        <div class="main-card mb-3 card col-xl-6 offset-xl-3 col-lg-12">
+            <div class="card-body">
+                <div class="card-title-space">
+                    <h5 class="card-title">
+                        Details
+                    </h5>
+                </div>
+                <form asp-controller="Role" asp-action="Details" asp-route-id="@Model.Id" method="post" class="custom-form">
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control disabled" disabled />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Type" class="control-label"></label>
+                        <select asp-for="Type" class="form-control" asp-items="Model.RoleTypes" disabled></select>
+                        <span asp-validation-for="Type" class="text-danger error-alert-custom"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="button-holder">
+                        <input type="submit" value="Save" class="btn btn-primary custom-submit" />
+                        <button type="button" id="remove-button" class="btn btn-danger remove-button">Remove</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

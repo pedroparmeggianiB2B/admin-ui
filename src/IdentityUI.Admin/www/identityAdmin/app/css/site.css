@@ -1,0 +1,55 @@
+﻿.table-input input {
+    padding: 5px !important;
+    height: 30px;
+}
+
+.table-input select {
+    padding: 1px !important;
+    height: 25px;
+}
+
+
+.modal-body .select2-selection {
+    border: 1px solid #c9ccd7 !important;
+    font-weight: 400;
+    height: 46px;
+    font-size: 0.875rem !important;
+}
+
+.modal-body .select2-selection__arrow{
+    height: 46px !important;
+}
+
+.modal-body .select2-selection__rendered {
+    line-height: 46px !important;
+}
+
+#impersionation-container {
+    left: 50%;
+    transform: translateX(-50%);
+    position: fixed;
+    z-index: 1000000;
+    top: auto;
+    bottom: 25px;
+    min-width: 40%;
+    line-height: 28px;
+    border-radius: 0px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+}
+
+#impersionation-container .btn {
+    background-color: #365b85;
+    color: white;
+    float: right;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 6px 25px;
+    transition: all 0.4s;
+    border-radius: 0px;
+    margin-left: 1.25rem;
+}
+
+#impersionation-container .btn:hover {
+    background-color: #233a54;
+}

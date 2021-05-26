@@ -1,0 +1,93 @@
+﻿@using SSRD.IdentityUI.Admin.Areas.IdentityAdmin.Models.Menu
+
+@inject Microsoft.Extensions.Options.IOptions<SSRD.IdentityUI.Core.Models.Options.IdentityUIEndpoints> _identityUIEndpoints;
+@inject SSRD.IdentityUI.Core.Interfaces.Services.IIdentityUIUserInfoService _identityUIUserInfoService;
+
+<nav class="sidebar sidebar-offcanvas menu-line-color" id="sidebar">
+    <ul class="nav">
+        @if (_identityUIUserInfoService.HasRole(IdentityUIRoles.IDENTITY_MANAGMENT_ROLE))
+        {
+            <li class="nav-item @(SidebarSelection.SelectedOption == SidebarOptions.Dashboard ? "active" : "")">
+                <a class="nav-link" href="@PagePath.DASHBOARD">
+                    <i class="fas fa-chart-line sidebar-icon-container"></i>
+                    <span class="menu-title i-mar">Dashboard</span>
+                </a>
+            </li>
+        }
+        @if (_identityUIUserInfoService.HasRole(IdentityUIRoles.IDENTITY_MANAGMENT_ROLE))
+        {
+            <li class="nav-item @(SidebarSelection.SelectedOption == SidebarOptions.User ? "active" : "")">
+                <a class="nav-link" href="@PagePath.USER">
+                    <i class="fas fa-user sidebar-icon-container"></i>
+                    <span class="menu-title i-mar">User</span>
+                </a>
+            </li>
+        }
+        @if (_identityUIUserInfoService.HasRole(IdentityUIRoles.IDENTITY_MANAGMENT_ROLE))
+        {
+            <li class="nav-item @(SidebarSelection.SelectedOption == SidebarOptions.Role ? "active" : "")">
+                <a class="nav-link" href="@PagePath.ROLE">
+                    <i class="far fa-id-badge sidebar-icon-container"></i>
+                    <span class="menu-title i-mar">Role</span>
+                </a>
+            </li>
+        }
+        @if (_identityUIUserInfoService.HasRole(IdentityUIRoles.IDENTITY_MANAGMENT_ROLE))
+        {
+            <li class="nav-item @(SidebarSelection.SelectedOption == SidebarOptions.Permission ? "active" : "")">
+                <a class="nav-link" href="@PagePath.PERMISSION">
+                    <i class="fas fa-lock sidebar-icon-container"></i>
+                    <span class="menu-title i-mar">Permission</span>
+                </a>
+            </li>
+        }
+        @if (_identityUIUserInfoService.HasGroupPermission(IdentityUIPermissions.GROUP_CAN_SEE_USERS)
+            || _identityUIUserInfoService.HasPermission(IdentityUIPermissions.IDENTITY_UI_CAN_MANAGE_GROUPS))
+        {
+            <li class="nav-item @(SidebarSelection.SelectedOption == SidebarOptions.Group ? "active" : "")">
+                @if (_identityUIUserInfoService.HasPermission(IdentityUIPermissions.IDENTITY_UI_CAN_MANAGE_GROUPS))
+                {
+                    <a class="nav-link" href="@PagePath.GROUP">
+                        <i class="fas fa-user-friends sidebar-icon-container"></i>
+                        <span class="menu-title i-mar">Group</span>
+                    </a>
+                }
+                else
+                {
+                    <span class="nav-link">
+                        <i class="fas fa-user-friends sidebar-icon-container"></i>
+                        <span class="menu-title i-mar">Group</span>
+                    </span>
+                }
+            </li>
+        }
+        @if (_identityUIUserInfoService.HasRole(IdentityUIRoles.IDENTITY_MANAGMENT_ROLE)
+             && _identityUIEndpoints.Value.UseEmailSender.HasValue && _identityUIEndpoints.Value.UseEmailSender.Value)
+        {
+            <li class="nav-item @(SidebarSelection.SelectedOption == SidebarOptions.Invite ? "active" : "")">
+                <a class="nav-link" href="@PagePath.INVITE">
+                    <i class="fas fa-envelope sidebar-icon-container"></i>
+                    <span class="menu-title i-mar">Invite</span>
+                </a>
+            </li>
+        }
+        @if (_identityUIUserInfoService.HasRole(IdentityUIRoles.IDENTITY_MANAGMENT_ROLE))
+        {
+            <li class="nav-item @(SidebarSelection.SelectedOption == SidebarOptions.Audit ? "active" : "")">
+                <a class="nav-link" href="@PagePath.AUDIT">
+                    <i class="fas fa-book sidebar-icon-container"></i>
+                    <span class="menu-title i-mar">Audit</span>
+                </a>
+            </li>
+        }
+        @if (_identityUIUserInfoService.HasRole(IdentityUIRoles.IDENTITY_MANAGMENT_ROLE))
+        {
+            <li class="nav-item @(SidebarSelection.SelectedOption == SidebarOptions.Setting ? "active" : "")">
+                <a class="nav-link" href="@PagePath.SETTING">
+                    <i class="fas fa-cogs sidebar-icon-container"></i>
+                    <span class="menu-title i-mar">Settings</span>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

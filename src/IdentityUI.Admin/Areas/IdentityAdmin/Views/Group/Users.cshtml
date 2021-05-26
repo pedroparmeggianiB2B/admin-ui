@@ -1,0 +1,77 @@
+﻿@using SSRD.IdentityUI.Admin.Areas.IdentityAdmin.Views.Group.Components.GroupMenu
+@model SSRD.IdentityUI.Admin.Areas.IdentityAdmin.Models.Group.GroupUserViewModel
+
+@inject Microsoft.Extensions.Options.IOptions<SSRD.IdentityUI.Core.Models.Options.IdentityUIEndpoints> _identityUIEndpoints;
+
+@inject SSRD.IdentityUI.Core.Interfaces.Services.IIdentityUIUserInfoService _identityUIUserInfoService;
+
+@{
+    SidebarSelection.SelectedOption = SidebarOptions.Group;
+}
+
+@{
+    ViewData["Title"] = "Groups";
+}
+
+@section script{
+    <script src="~/identityAdmin/app/group/group-users.js"></script>
+    <script src="~/identityAdmin/app/group/group-invite-modal.js"></script>
+    <script>
+        $(document).ready(function () {
+            new GroupUsers('@Model.GroupId', '@_identityUIUserInfoService.GetUserId()', '@Json.Serialize(Model.CanMangeGroupRoles)', '@Json.Serialize(Model.CanAssigneGroupRoles)',
+                '@_identityUIUserInfoService.HasGroupPermission(IdentityUIPermissions.GROUP_CAN_MANAGE_ROLES)' === 'True',
+                '@_identityUIUserInfoService.HasGroupPermission(IdentityUIPermissions.GROUP_CAN_REMOVE_USERS)' === 'True',
+                '@Model.CanChangeOwnRole' === 'True')
+        });
+    </script>
+}
+
+@section modal{
+    <div id="modal-container">
+        @if (_identityUIUserInfoService.HasGroupPermission(IdentityUIPermissions.GROUP_CAN_ADD_EXISTING_USERS))
+        {
+            @await Component.InvokeAsync("AddExistingUserToGroupModal")
+        }
+
+        @if (_identityUIUserInfoService.HasGroupPermission(IdentityUIPermissions.GROUP_CAN_INVITE_USERS) 
+            && _identityUIEndpoints.Value.UseEmailSender.HasValue && _identityUIEndpoints.Value.UseEmailSender.Value)
+        {
+            @await Component.InvokeAsync("InviteToGroupModal")
+        }
+
+        @await Component.InvokeAsync("IdentityConfirmationModal")
+    </div>
+}
+
+<div id="status-alert-container">
+    @await Component.InvokeAsync("IdentityStatusAlertJs")
+</div>
+
+<div>
+    @(await Component.InvokeAsync("GroupMenu", Model.ToViewComponent(GroupMenuViewComponent.TabSelected.Users)))
+
+    <div class="tab-content">
+        <div class="main-card mb-3 card col-xl-6 offset-xl-3 col-lg-12">
+            <div class="card-body">
+                <div class="card-title-space">
+                    <h5 class="card-title">
+                        Users
+                    </h5>
+                    @if (_identityUIUserInfoService.HasGroupPermission(IdentityUIPermissions.GROUP_CAN_ADD_EXISTING_USERS))
+                    {
+                        <button id="add-existing-user-button" class="header-button">Add Existing User</button>
+                    }
+
+                    @if (_identityUIUserInfoService.HasGroupPermission(IdentityUIPermissions.GROUP_CAN_INVITE_USERS)
+                       && _identityUIEndpoints.Value.UseEmailSender.HasValue && _identityUIEndpoints.Value.UseEmailSender.Value)
+                    {
+                        <button id="invite-user-button" class="header-button">Invite User</button>
+                    }
+                </div>
+                <div class="custom_container custom_table">
+                    <table id="user-table" class="dataTableClass display "></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
